@@ -1,0 +1,29 @@
+-------------------------------------------------------------------------
+Oracle backup command.
+----------------------
+c:\Users\10144>sqlplus /nolog
+
+SQL>connect infodba/infodba@IZTC5755(instance name)
+
+SQL>connect sys/infodba@IZTC5755 as sysdba
+
+SQL> CREATE OR REPLACE DIRECTORY exp_dir AS 'D:\BackupTC';
+
+SQL> GRANT READ, WRITE ON DIRECTORY exp_dir TO infodba;
+
+SQL>grant exp_full_database to infodba;
+
+SQL>exit
+
+---------------------------------------------------------
+
+C:/Users\10144>d:
+D:\>set ORACLE_HOME=D:\Apps\oracle12c\product\12.1.0\dbhome_1
+D:\>set ORACLE_SID=IZTC5755(give db instance)
+D:\>cd %ORACLE_HOME%\BIN
+D:\Apps\oracle12c\product\12.1.0\dbhome_1\BIN>expdp infodba/infodba@IZTC5755 full=Y directory=exp_dir dumpfile=TCbackup.dmp logfile=TCbackup.log
+
+
+expdp infodba/infodba@IZTC5755 full=Y directory=exp_dir dumpfile=TCbackup.dmp logfile=TCbackup.log
+
+--------------------------------------------------------------------------
