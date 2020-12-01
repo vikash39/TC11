@@ -1,0 +1,30 @@
+int GTAC_LOV_ask_num_of_values() 
+{
+    int  
+        error_code= ITK_ok,  
+        n_entries = 1, 
+        n_found = 0,
+		iCnt =0;
+    tag_t 
+        query = NULLTAG, 
+        *dba_users = NULL;
+    char
+        *qry_entries[2] = {"LOV Name"},
+        *qry_values[2] =  {"t1aTICompanies"},
+		**lovValue = NULL;
+
+   error_code = QRY_find("__CustLOVQuery", &query);
+    error_code = QRY_execute(query, n_entries, qry_entries, qry_values, &n_found, &dba_users);
+	cout<<"n_found  "<<n_found<<endl;
+
+
+	AOM_ask_value_strings(dba_users[0],"lov_values",&iCnt, &lovValue);
+	for(int i=0; i<iCnt; i++){
+		cout<<"LOV Value = "<<lovValue[i]<<endl;
+	}
+    //*length = n_found;
+
+   // MEM_free(dba_users);
+
+    return error_code; 
+}
