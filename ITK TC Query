@@ -1,0 +1,111 @@
+#include <iman.h>
+#include <sample_err.h>
+#include <pom.h>
+#include <item.h>
+#include <aom.h>
+#include <aom_prop.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <pom.h>
+#include <qry.h>
+#include <iman_date.h>
+#include <cfm.h>
+
+int ITK_user_main(int argc, char* argv[])
+{
+
+
+       int num_found;
+       int status;
+       int i;
+       int n_entries=1;
+
+       char rev[ITEM_id_size_c+1];
+       char id[ITEM_id_size_c+1];
+       char *how;
+       char *query_name=ITK_ask_cli_argument("-query=");
+       char *filename=ITK_ask_cli_argument("-file=");
+       /* Expecting an Item ID or Item ID with wild card */
+       char *itemID=ITK_ask_cli_argument("-itemID=");
+       char *message;
+       char **entries = NULL;
+       char **values = NULL;
+       char searchEntry [1][16] = {"ID"};
+
+       tag_t tag_query;
+       tag_t *tag_query_result;
+       tag_t tag_item;
+       tag_t cfm_rule;
+       tag_t tag_configured_itemrev;
+
+       FILE *ugtopv_file;
+
+
+   entries = (char **) MEM_alloc(n_entries * sizeof(char *));
+   values = (char **) MEM_alloc(n_entries * sizeof(char *));
+
+
+       if(query_name!=NULL && itemID!=NULL) {
+
+               ITK_initialize_text_services (0);
+               status = ITK_auto_login ();
+               if (status != ITK_ok ) {
+                       EMH_ask_error_text(status, &message);
+                       printf("Error with ITK_auto_login: \"%d\", \"%s\"\n", status, message);
+                       MEM_free(message);
+                       return status;
+               }
+
+               ITK_set_journalling (TRUE);
+
+
+               entries[0] = (char *)MEM_alloc(strlen(searchEntry[0] ) + 1);
+               strcpy(entries[0], searchEntry[0]);
+
+               values[0] = (char *)MEM_alloc(strlen(itemID ) + 1);
+               strcpy(values[0], itemID);
+
+
+               /*CALL(CFM_find ("Latest Released VR", &cfm_rule));*/
+               CALL(QRY_find(query_name,&tag_query));
+               printf("Searching...\n");
+
+               /* CALL(QRY_execute(tag_query,0,NULL,NULL,&num_found,&tag_query_result)); */
+               CALL(QRY_execute(tag_query,n_entries, entries, values,&num_found,&tag_query_result));
+
+               printf("\nNumber of objects found=%d\n",num_found);
+               printf("\nArgument passed in is: %s\n",itemID);
+
+
+               if( filename!=NULL ) {
+                       printf("Creating output file...\n");
+                       if( (ugtopv_file=fopen(filename,"w"))==NULL)  {
+                               return(0);
+                       }
+
+                       for(i=0;i<num_found;i++) {
+                               /*CALL(CFM_item_ask_configured (cfm_rule, tag_query_result[i], &tag_configured_itemrev, &how));*/
+                               /*CALL(ITEM_ask_rev_id(tag_query_result[i],rev));*/
+                               /*CALL(ITEM_ask_id(tag_query_result[i],id));*/
+                               CALL(ITEM_ask_rev_id(tag_query_result[i], rev));
+                               
+                               CALL(ITEM_ask_item_of_rev(tag_query_result[i], &tag_item));
+                               CALL(ITEM_ask_id(tag_item, id));
+                               fprintf(ugtopv_file,"@DB/%s/%s\n",id,rev);
+                       }
+                       printf("Done!\n");
+                       fclose(ugtopv_file);
+               }
+
+               MEM_free(tag_query_result);
+       } else {
+               printf("\nSyntax: query -query -itemID [-file]"
+                       "\nExample: query -query=__Refile -itemID=4012* -file=output.txt\n"
+                       "\n-query={Query Name}\n"
+                       "-itemID=(Item ID or Item ID with wildcard)\n"
+                       "-file={OPTIONAL: File to output results}\n");
+       }
+
+   ITK_exit_module (TRUE);
+   return status;
+}
