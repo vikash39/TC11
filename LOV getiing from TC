@@ -1,0 +1,398 @@
+
+#include "TIACommon.h"
+#include "TIAStandardCostRecord.cpp"
+
+using namespace std;
+
+int ITK_user_main(int argc, char* args[]){
+
+	int iFail         = ITK_ok;
+	int  costType = 0;
+
+	char* userName = ITK_ask_cli_argument("-u=");
+	char* password = ITK_ask_cli_argument("-p=");
+	char* group    = ITK_ask_cli_argument("-g=");
+
+	iFail = ITK_init_module(userName, password, group);
+	if(iFail==0)
+	{
+		cout<<"Teamcenter Login Successfully \n";
+	}else{
+		cout<<"Teamcenter Login Faild \n";
+	}
+
+	vector<TIAStandardCostRecords> vcStdCostRecords;
+	vcStdCostRecords.push_back(TIAStandardCostRecords());
+	vcStdCostRecords[0].costSet="02";
+	vcStdCostRecords[0].facility="42";
+	vcStdCostRecords[0].currentCost="22.28009";
+	vcStdCostRecords[0].quantity="1.000";
+	vcStdCostRecords[0].costBucket="000";
+	vcStdCostRecords[0].stockingUofM="EA";
+	vcStdCostRecords[0].RecordId="CF";
+	vcStdCostRecords[0].currency="USD";
+
+	vcStdCostRecords.push_back(TIAStandardCostRecords());
+	vcStdCostRecords[1].costSet="02";
+	vcStdCostRecords[1].facility="42";
+	vcStdCostRecords[1].currentCost="0.00000";
+	vcStdCostRecords[1].quantity="1.000";
+	vcStdCostRecords[1].costBucket="001";
+	vcStdCostRecords[1].stockingUofM="EA";
+	vcStdCostRecords[1].RecordId="CF";
+	vcStdCostRecords[1].currency="USD";
+
+
+	vcStdCostRecords.push_back(TIAStandardCostRecords());
+	vcStdCostRecords[2].costSet="02";
+	vcStdCostRecords[2].facility="42";
+	vcStdCostRecords[2].currentCost="1.89723";
+	vcStdCostRecords[2].quantity="1.000";
+	vcStdCostRecords[2].costBucket="003";
+	vcStdCostRecords[2].stockingUofM="EA";
+	vcStdCostRecords[2].RecordId="CF";
+	vcStdCostRecords[2].currency="USD";
+
+
+	vcStdCostRecords.push_back(TIAStandardCostRecords());
+	vcStdCostRecords[3].costSet="02";
+	vcStdCostRecords[3].facility="42";
+	vcStdCostRecords[3].currentCost="1.87483";
+	vcStdCostRecords[3].quantity="1.000";
+	vcStdCostRecords[3].costBucket="004";
+	vcStdCostRecords[3].stockingUofM="EA";
+	vcStdCostRecords[3].RecordId="CF";
+	vcStdCostRecords[3].currency="USD";
+
+	vcStdCostRecords.push_back(TIAStandardCostRecords());
+	vcStdCostRecords[4].costSet="02";
+	vcStdCostRecords[4].facility="42";
+	vcStdCostRecords[4].currentCost="1.15023";
+	vcStdCostRecords[4].quantity="1.000";
+	vcStdCostRecords[4].costBucket="005";
+	vcStdCostRecords[4].stockingUofM="EA";
+	vcStdCostRecords[4].RecordId="CF";
+	vcStdCostRecords[4].currency="USD";
+
+
+
+
+
+	//map<int, map<string, string>> mapXmlInputRecords = inputXmlRecords();
+
+	TI_getCurrentSiteName();
+	gettingGroupAndUserType("infodba", "dba");
+	//readAttributeMappingFile();
+
+	if(vcStdCostRecords.size() !=0){
+		processStandardCostData(vcStdCostRecords);
+		//processStandardCostData();
+	}
+
+
+	return iFail;
+}
+/*
+map<int, map<string, string>> inputXmlRecords(){
+
+map<int, map<string, string>> mapInputXmlRecords;
+
+mapInputXmlRecords.insert(make_pair(1, map<string, string>()));
+mapInputXmlRecords[1].insert(make_pair("RecordId","CF"));
+mapInputXmlRecords[1].insert(make_pair("itemid","TXF90000239"));
+mapInputXmlRecords[1].insert(make_pair("Facility","42"));
+mapInputXmlRecords[1].insert(make_pair("CostSet","02"));
+mapInputXmlRecords[1].insert(make_pair("CostBucket","000"));
+mapInputXmlRecords[1].insert(make_pair("CurrentCost","22.28009"));
+mapInputXmlRecords[1].insert(make_pair("Quantity","1.000"));
+mapInputXmlRecords[1].insert(make_pair("StockingUofM","EA"));
+mapInputXmlRecords[1].insert(make_pair("Currency","USD"));
+
+mapInputXmlRecords.insert(make_pair(2, map<string, string>()));
+mapInputXmlRecords[2].insert(make_pair("RecordId","CF"));
+mapInputXmlRecords[2].insert(make_pair("itemid","TXF90000239"));
+mapInputXmlRecords[2].insert(make_pair("Facility","42"));
+mapInputXmlRecords[2].insert(make_pair("CostSet","02"));
+mapInputXmlRecords[2].insert(make_pair("CostBucket","001"));
+mapInputXmlRecords[2].insert(make_pair("CurrentCost","0.00000"));
+mapInputXmlRecords[2].insert(make_pair("Quantity","1.000"));
+mapInputXmlRecords[2].insert(make_pair("StockingUofM","EA"));
+mapInputXmlRecords[2].insert(make_pair("Currency","USD"));
+
+mapInputXmlRecords.insert(make_pair(3, map<string, string>()));
+mapInputXmlRecords[3].insert(make_pair("RecordId","CF"));
+mapInputXmlRecords[3].insert(make_pair("itemid","TXF90000239"));
+mapInputXmlRecords[3].insert(make_pair("Facility","42"));
+mapInputXmlRecords[3].insert(make_pair("CostSet","02"));
+mapInputXmlRecords[3].insert(make_pair("CostBucket","003"));
+mapInputXmlRecords[3].insert(make_pair("CurrentCost","1.89723"));
+mapInputXmlRecords[3].insert(make_pair("Quantity","1.000"));
+mapInputXmlRecords[3].insert(make_pair("StockingUofM","EA"));
+mapInputXmlRecords[3].insert(make_pair("Currency","USD"));
+
+mapInputXmlRecords.insert(make_pair(4, map<string, string>()));
+mapInputXmlRecords[4].insert(make_pair("RecordId","CF"));
+mapInputXmlRecords[4].insert(make_pair("itemid","TXF90000239"));
+mapInputXmlRecords[4].insert(make_pair("Facility","42"));
+mapInputXmlRecords[4].insert(make_pair("CostSet","02"));
+mapInputXmlRecords[4].insert(make_pair("CostBucket","004"));
+mapInputXmlRecords[4].insert(make_pair("CurrentCost","1.87483"));
+mapInputXmlRecords[4].insert(make_pair("Quantity","1.000"));
+mapInputXmlRecords[4].insert(make_pair("StockingUofM","EA"));
+mapInputXmlRecords[4].insert(make_pair("Currency","USD"));
+
+
+
+mapInputXmlRecords.insert(make_pair(5, map<string, string>()));
+mapInputXmlRecords[5].insert(make_pair("RecordId","CF"));
+mapInputXmlRecords[5].insert(make_pair("itemid","TXF90000239"));
+mapInputXmlRecords[5].insert(make_pair("Facility","42"));
+mapInputXmlRecords[5].insert(make_pair("CostSet","02"));
+mapInputXmlRecords[5].insert(make_pair("CostBucket","005"));
+mapInputXmlRecords[5].insert(make_pair("CurrentCost","1.15023"));
+mapInputXmlRecords[5].insert(make_pair("Quantity","1.000"));
+mapInputXmlRecords[5].insert(make_pair("StockingUofM","EA"));
+mapInputXmlRecords[5].insert(make_pair("Currency","USD"));  
+
+return mapInputXmlRecords;
+}*/
+
+
+void TI_getCurrentSiteName(){
+
+	int iFail = ITK_ok;
+	int  iSite    = 0;
+	int  iSiteID  = 0;
+
+	tag_t    tSitetag        = NULLTAG;
+
+	char    acSiteName[SA_site_size_c+1]    = {'\0'};
+	printf("\n getCurrentSiteName1");
+
+	iFail = POM_site_id(&iSite);
+	printf("\n iSite");
+	if(iSite != 0)
+		iFail = SA_find_site_by_id(iSite,&tSitetag);
+	if(iFail ==0)
+		printf("\n iSite1");
+
+	if(tSitetag!= NULLTAG)
+		iFail = SA_ask_site_info(tSitetag,acSiteName,&iSiteID);
+	if(iFail==0)
+		printf("\n %s: %d",acSiteName,iSiteID);
+
+	//printf("\n iSite2");    
+}
+
+void gettingGroupAndUserType(string sGroupName, string sUserName ){
+
+	int iFail = ITK_ok;
+
+
+
+	tag_t tGroupName = NULLTAG;
+	tag_t tUserName  = NULLTAG; 
+
+	char* cGroupName = NULL;
+	char* cUserName  = NULL;
+
+	printf("\n  %s",sGroupName.c_str());
+	iFail = SA_find_group(sGroupName.c_str(), &tGroupName);
+	printf("\n group");
+	iFail = SA_ask_group_name2(tGroupName, &cGroupName);
+	//API for checkign user existance
+	iFail = SA_find_user2(sUserName.c_str(), &tUserName);
+	if(iFail ==0)
+		printf("\n get user");
+	//iFail = AOM_ask_name(tUserName, &cUserName);
+	//printf("\n User name got :  %s",cUserName);
+}
+
+
+map<string, string> readAttributeMappingFile(){
+
+	map<string, string> stdCostAttrMap;
+	string line;
+
+	string sAttrName ="";
+
+	int i=0;
+	//char** formType = NULL;
+
+	cout<<" Enter into function readAttributeMappingFile" <<endl;
+
+	ifstream file("D:\\ITKWorkspace\\ERP_PLM_Attribute_Mapping.txt");
+	string str; 
+
+	if(file.is_open()){
+		file.ignore(numeric_limits<streamsize>::max(),'\n');
+
+		while (getline(file, str)) {
+			bool bTrue = false;
+			string erpAttrName ="";
+			string plmAttrName ="";
+
+			stringstream ss ( str );
+
+			int iCnt = 0;
+
+			while(getline(ss, sAttrName, ':'))  { 
+
+				if(sAttrName.compare("StandardCostForm")==0 && sAttrName !=""){
+
+				}
+				if(sAttrName.compare("StandardCostForm")!=0 && sAttrName !=""){
+					if(iCnt==0){
+						erpAttrName =sAttrName;
+						cout<<" erpAttrName = "<<erpAttrName<<endl;
+						iCnt++;
+					}
+
+				}if(iCnt !=0 && sAttrName !="") {
+					if(sAttrName.compare("StandardCostForm")!=0 && erpAttrName.compare(sAttrName)!=0 ){
+						plmAttrName = sAttrName;
+						cout<<" plmAttrName = "<<plmAttrName<<endl;
+					}
+				}  
+			}
+			stdCostAttrMap.insert( pair<string, string>(erpAttrName, plmAttrName) );
+
+		}
+
+		file.close();
+	}
+	else {
+		cout<<"File is not open"<<endl;
+	}
+
+	return stdCostAttrMap;
+}
+
+void processStandardCostData(vector<struct TIAStandardCostRecords> vcStdCostRecords){
+
+	map<string, string> facilityCodeNameMap = parseFacilityMappingLOV(facility_code_name_mapping_lov);
+
+	/*for(int i=0;i<vcStdCostRecords.size();i++) {
+		int index = i;
+		TIAStandardCostRecords tempStdCostRecord = vcStdCostRecords.at[index];
+
+		while(true) {
+			if(index <vcStdCostRecords.size() && stdCostRecordCompare(tempStdCostRecord , vcStdCostRecords.at(index))==0) {
+
+					if(vcStdCostRecords.at(index).costBucket =="000")
+					{
+						tempStdCostRecord.totalCost = vcStdCostRecords.at(index).currentCost;
+					}
+					else if(vcStdCostRecords.at(index).costBucket =="001")
+					{
+						tempStdCostRecord.materialCost = vcStdCostRecords.at(index).currentCost;
+					}
+					else if(vcStdCostRecords.at(index).costBucket =="002")
+					{
+						tempStdCostRecord.scrapPercentage = vcStdCostRecords.at(index).currentCost;
+					}
+					else if(vcStdCostRecords.at(index).costBucket =="003")
+					{
+						tempStdCostRecord.laborCost = vcStdCostRecords.at(index).currentCost;
+					}
+					else if(vcStdCostRecords.at(index).costBucket =="004")
+					{
+						tempStdCostRecord.variableOverHeadCost = vcStdCostRecords.at(index).currentCost;
+					}
+					else if(vcStdCostRecords.at(index).costBucket =="005")
+					{
+						tempStdCostRecord.fixedOverHeadCost = vcStdCostRecords.at(index).currentCost;
+					}
+					else if(vcStdCostRecords.at(index).costBucket =="007")
+					{
+						tempStdCostRecord.dutyCost = vcStdCostRecords.at(index).currentCost;
+					}
+					else if(vcStdCostRecords.at(index).costBucket =="008")
+					{
+						tempStdCostRecord.freightCost = vcStdCostRecords.at(index).currentCost;
+					}
+					if(tempStdCostRecord = vcStdCostRecords.at(index))
+						index++;
+					else
+						 vcStdCostRecords.erase(index);
+					
+				}
+				else
+					break;
+			//}
+				
+		}
+			
+	} */
+
+}
+
+ int stdCostRecordCompare(TIAStandardCostRecords r1, TIAStandardCostRecords r2) {
+	 if((r1.partNumber == r2.partNumber) && (r1.facility == r2.facility))
+			return 0;
+		return -1;
+}
+
+map<string, string> parseFacilityMappingLOV(string lovName){
+
+	cout<<"Reading the Facility Mapping Lov - started"<<endl;
+
+	int iFail    = ITK_ok;
+	int iNumCunt = 0;
+	int iReturnCnt = 0;
+
+	tag_t* tLov		= NULLTAG;
+	tag_t tlovObject    = NULLTAG;
+
+	char** cLovValues = NULL;
+
+	map<string, string> facilityCodeNameMap;
+	//GTAC_LOV_ask_num_of_values() ; //Working function
+
+	iFail = LOV_find(lovName.c_str(), &iNumCunt, &tLov);
+
+	for(int i=0; i<iNumCunt; i++) {
+
+		iFail = LOV_ask_values_string(tLov[i], &iReturnCnt, &cLovValues);
+	}
+
+	for(int i=0; i<iNumCunt; i++) {
+		cout<<"LOV Value--------- = "<<cLovValues[i]<<endl;
+	}
+	
+
+	return facilityCodeNameMap;
+}
+
+
+int GTAC_LOV_ask_num_of_values() 
+{
+	int  
+		error_code= ITK_ok,  
+		n_entries = 1, 
+		n_found = 0,
+		iCnt =0;
+	tag_t 
+		query = NULLTAG, 
+		*dba_users = NULL;
+	char
+		*qry_entries[2] = {"LOV Name"},
+		*qry_values[2] =  {"t1aTICompanies"},
+		**lovValue = NULL;
+
+	error_code = QRY_find("__CustLOVQuery", &query);
+	error_code = QRY_execute(query, n_entries, qry_entries, qry_values, &n_found, &dba_users);
+	cout<<"n_found  "<<n_found<<endl;
+
+
+	AOM_ask_value_strings(dba_users[0],"lov_values",&iCnt, &lovValue);
+	for(int i=0; i<iCnt; i++){
+		cout<<"LOV Value = "<<lovValue[i]<<endl;
+	}
+	//*length = n_found;
+
+	// MEM_free(dba_users);
+
+	return error_code; 
+}
+
