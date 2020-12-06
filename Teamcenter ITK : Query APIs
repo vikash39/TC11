@@ -1,0 +1,48 @@
+Teamcenter ITK : Query APIs
+How to deal with Query in Teamcenter with ITK APIs.
+
+Here we will find out the Task present in the Task to Perform folder in the user Worklist and its attachments.
+
+//Performs a case sensitive search for the specified query name and returns its tag.
+QRY_find ( "General...",&query_object);
+printf("\nquery_tag : %d\n",query_object);fflush(stdout);
+
+char   *critNames[2], *critValues[2];
+
+critNames[0] = "Type";
+critNames[1] = "Owning User";
+
+critValues[0] = "TasksToPerform";
+critValues[1] = userid;
+
+QRY_execute(query_object, 2, critNames, critValues, &num_found, &total_results);
+printf("\nTotal Tasks To perform Found : %d\n",num_found);
+//Task to Perform is folder in User worklist
+
+fflush(stdout);
+
+//Returns a list containing all the references in the Task to perform folder
+//by the given sort criteria.
+FL_ask_references(total_results[0],FL_fsc_by_date_modified ,&TotalSize,&Objects_Found);
+printf("\nObjects under Tasks To perform Found : %d\n",TotalSize);
+
+//Task present in the Task To Perform Folder will be return by FL_ask_references API
+for (p=0;p<TotalSize ;p++ )// Iterate over Task
+{
+   WSOM_ask_name(Objects_Found[p],taskName);
+   WSOM_ask_object_type(Objects_Found[p],type_name);
+   WSOM_ask_description(Objects_Found[p],JobName);
+   AOM_get_value_string(Objects_Found[p],"object_desc",&JobDesc);
+   AOM_ask_value_string(Objects_Found[p],"job_name",&JobTargerAttach);
+   printf("\n Actual taskName [%s] and it type_name  Is [%s] and JobName :%s and JobDesc : %s\n",taskName,type_name,JobName,JobDesc);fflush(stdout);
+
+  if (tc_strcmp(JobTargerAttach,PassedFdr)==0) //Is what we need
+  {
+   printf("\nInside for : %s\n",JobTargerAttach);
+   tWSOM_Find = NULLTAG;
+
+     // Get the Target Attachment
+       AOM_ask_value_tags(Objects_Found[p],"root_target_attachments",&n_attchs,&tWSOM_Find);
+      printf("\n n_attchs iss :%d and tWSOM_Find : %d tWSOM_Find[0] : %d         tWSOM_Find[foundcnt] : %d\n",n_attchs,tWSOM_Find,tWSOM_Find[0],tWSOM_Find[foundcnt]); fflush(stdout);
+  }
+}
