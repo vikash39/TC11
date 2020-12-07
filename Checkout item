@@ -1,0 +1,594 @@
+
+Teamcenter Open Gate
+
+Saturday, 24 December 2016
+Teamcenter ITK : Create Object / Assign project / Check In/ Release /Effectivity
+Problem statement :
+
+1) Find the item if found then check in the item(if checked out)
+2) Create the Item if not found ,set project,unit of measure and        Release item and apply effectivity
+
+At the end of this code you will learn
+To USE ITK APIs for...
+ITEM Creation ,Finding Item,Finding Project ,Finding user ,Add user to project ,Assign project to object,checkin object,add release status,add effectivity
+
+#include <tccore/aom.h>
+#include <res/res_itk.h>
+#include <bom/bom.h>
+#include <ctype.h>
+#include <tc/emh.h>
+#include <tc/folder.h>
+#include <tccore/grm.h>
+#include <tccore/grmtype.h>
+#include <itk/mem.h>
+#include <tccore/item.h>
+#include <pom/pom/pom.h>
+#include <ps/ps.h>
+#include <tccore/uom.h>
+#include <user_exits/user_exits.h>
+#include <rdv/arch.h>
+#include <stdlib.h>
+#include <string.h>
+#include <textsrv/textserver.h>
+#include <tccore/item_errors.h>
+#include <stdlib.h>
+#include <tccore/libtccore_exports.h>
+
+#define ONE "1-Mtr"
+#define TWO "2-Kg"
+#define THREE "3-Ltr"
+#define FOUR "4-Nos"
+#define FIVE "5-Sq.Mtr"
+#define SIX "6-Sets"
+#define SEVEN "7-Tonne"
+#define EIGHT "8-Cu.Mtr"
+#define NINE "9-Thsnds"
+#define EIGHT "8-Cu.Mtr"
+#define CRCWORKING "A5_acsReview"
+#define CRCREVIEW "A5_acsWorking"
+#define CRCRELEASED "A5_acsErcRlzd"
+#define KPLWORKING  "A5_acsAPLWrkg"
+#define KPLRELEASED "A5_acsAplRlzd"
+#define STDWORKING  "A5_acsSTDWrkg"
+#define STDRELEASED "A5_acsStdRlzd"
+#define Debug TRUE
+#define ITK_CALL(X)        \
+ if(Debug)        \
+
+  {          \
+
+   printf(#X);       \
+
+  }          \
+
+  fflush(NULL);       \
+
+  status=X;         \
+
+  if (status != ITK_ok )      \
+
+  {          \
+
+   int    index = 0;   \
+   int    n_ifails = 0;  \
+   const int*  severities = 0;  \
+   const int*  ifails = 0;   \
+   const char** texts = NULL;  \
+       \
+                 EMH_ask_errors( &n_ifails, &severities, &ifails, &texts);  \
+   printf("\t%3d error(s)\n", n_ifails);       \
+   for( index=0; index<n_ifails; index++)       \
+   {                \
+    printf("\tError #%d, %s\n", ifails[index], texts[index]); \
+   }                \
+   return status;             \
+  }                 \
+  else         \
+  {          \
+   if(Debug)       \
+   printf("\tSUCCESS\n");    \
+  }          \
+static char* default_empty_to_A(char *s)
+{
+    return (NULL == s ? s : ('\0' == s[0] ? "A" : s));
+}
+
+static int validate_date ( char *date , logical *date_is_valid , date_t *the_dt )
+{
+    int      retcode    = ITK_ok;     /* Function return code */
+    date_t   dt         = NULLDATE;   /* Date structure */
+    int      month      = 0;          /* Month */
+    int      day        = 0;          /* Day */
+    int      year       = 0;          /* Year */
+    int      hour       = 0;          /* Hour */
+    int      minute     = 0;          /* Minutes */
+    int      second     = 0;          /* Seconds */
+    *date_is_valid = TRUE;
+
+    /* Converts a date_t structure into the format specified  */
+
+    retcode = DATE_string_to_date ( date , "%d-%b-%Y %H:%M:%S" , &month , &day ,
+
+                                    &year , &hour , &minute , &second);
+
+    if ( retcode != ITK_ok )
+    {
+        *date_is_valid = FALSE;
+    }
+    else
+    {
+
+        dt.month = month;
+        dt.day   = day;
+        dt.year  = year;
+        dt.hour  = hour;
+        dt.minute= minute;
+        dt.second= second;
+
+       *the_dt = dt;
+    }
+    return retcode;
+}
+
+int setAttributesOnDesignRev(tag_t* rev,char* projectcode,char* designgroup,char* mod_desc,char* DrawingNoS,char* DrawingIndS,char* Materialclass,char* MaterialInDrwS,char* MaterialThickNessS,char* DeignOwnUnitS,char* ModelIndS,char* ColourIndS,char* WeightS)
+{
+
+ int status;
+ double dweight=0;
+ tag_t projobj=NULLTAG;
+ tag_t user_tag=NULLTAG;
+ char* username=NULL;
+
+ ITK_CALL ( AOM_set_value_string(*rev,"m5_ProjectCode",projectcode));
+    //Find the project for specified protected
+ ITK_CALL (PROJ_find(projectcode,&projobj));
+ if(projobj !=NULLTAG)
+ {
+
+ //Get User object
+  POM_get_user(&username,&user_tag);
+  //Add user to Project
+  ITK_CALL(PROJ_add_members(projobj,1,&user_tag));
+  //Assign project to object
+  ITK_CALL (PROJ_assign_objects(1 ,&projobj ,1 ,rev ));
+  printf("\nAssigned to Project\n");fflush(stdout);
+ }
+       else
+ {
+  printf("\nProject not found\n");fflush(stdout);
+        }
+ ITK_CALL ( AOM_set_value_string(*rev,"DesignGrp",designgroup));
+ ITK_CALL ( AOM_set_value_double(*rev,"Weight",dweight));
+//Save object in DataBase
+ ITK_CALL(AOM_save(*rev));
+
+ //Must call this method after AOM_save
+ ITK_CALL(AOM_unlock(*rev));
+}
+
+int setAttributesOnDesign(tag_t* item,char* UnitOfMeasureS,char* LeftRhS)
+{
+ int status;
+ char* ent_uom=NULL;
+ tag_t unit_of_measure=NULLTAG;
+
+ ent_uom=(char *) MEM_alloc(10 * sizeof(char *));
+
+ if(strcmp(UnitOfMeasureS,"1")==0){strcpy(ent_uom,ONE);}
+ else if(strcmp(UnitOfMeasureS,"2")==0){strcpy(ent_uom,TWO);}
+ else if(strcmp(UnitOfMeasureS,"7")==0){strcpy(ent_uom,SEVEN);}
+ else if(strcmp(UnitOfMeasureS,"8")==0){strcpy(ent_uom,EIGHT);}
+ else {strcpy(ent_uom,"-");}
+
+        //Find Unitof measure symbol
+ ITK_CALL(UOM_find_by_symbol(ent_uom,&unit_of_measure));
+
+ //Set unit of measure on item
+ ITK_CALL(ITEM_set_unit_of_measure(*item, unit_of_measure));
+
+ ITK_CALL ( AOM_set_value_string(*item,"LeftRH",LeftRhS));
+
+}
+
+int setLifeCycle(tag_t* itemRev,char* lifeCycleS)
+{
+  int status;
+  tag_t   status2=NULLTAG;
+  logical retain=false; 
+  char* lcsToset=NULL;
+
+  lcsToset =(char *) MEM_alloc(20 * sizeof(char *));
+
+         if(strcmp(lifeCycleS,"LcsReview")==0){strcpy(lcsToset,CRCWORKING);}
+  else if(strcmp(lifeCycleS,"acsWorking")==0){strcpy(lcsToset,CRCREVIEW);}
+  else if(strcmp(lifeCycleS,"acsErcRlzd")==0){strcpy(lcsToset,CRCRELEASED);}
+  else if(strcmp(lifeCycleS,"acsAPLWrkg")==0){strcpy(lcsToset,KPLWORKING);}
+  else if(strcmp(lifeCycleS,"acsAplRlzd")==0){strcpy(lcsToset,KPLRELEASED);}
+  else if(strcmp(lifeCycleS,"acsSTDWrkg")==0){strcpy(lcsToset,STDWORKING);}
+  else if(strcmp(lifeCycleS,"acsSTDRlzd")==0)
+  {
+   printf("\n This is std rel...");
+   strcpy(lcsToset,STDRELEASED);
+  }
+  //Create Release Status
+  ITK_CALL(CR_create_release_status(lcsToset,&status2));
+  //Add release status and populates the date_released with the current date (if release status has an invalid date)before adding the status.
+  ITK_CALL(EPM_add_release_status(status2,1,itemRev,retain));
+}
+
+int convertDate(char* date,char* rDate)
+{
+ int status;
+}
+
+int setEffectivity(tag_t* itemRev,char* date)
+{
+ int status;
+ logical   date_is_valid   = FALSE;
+ tag_t   st_date_id =NULLTAG;
+ tag_t     end_date_id =NULLTAG;
+ tag_t     eff_t =NULLTAG;
+ date_t   st_date;
+ date_t    end_date;
+ int       st_count=0;
+ tag_t*    status_list;
+ tag_t class_id=NULLTAG;
+ char* class_name=NULL;
+ logical ans=false;
+      //Get Release status
+ ITK_CALL(WSOM_ask_release_status_list(*itemRev,&st_count,&status_list));
+
+        printf("\n No. of status found:[%d]",st_count);
+ if(st_count>0)
+ {
+
+  ITK_CALL(POM_class_of_instance(status_list[0],&class_id));
+  ITK_CALL(POM_name_of_class(class_id,&class_name));
+  ITK_CALL(POM_unload_instances (st_count,status_list));
+  ITK_CALL(POM_load_instances(st_count,status_list,class_id,1));
+  ITK_CALL(POM_is_loaded(status_list[0],&ans));
+
+  if(ans==1)
+  {
+        // Put effective date on release status
+   ITK_CALL(WSOM_effectivity_create_with_text(status_list[0],NULLTAG,date,&eff_t));
+   ITK_CALL(AOM_save(status_list[0]));
+   ITK_CALL(POM_save_instances(st_count,status_list,1));
+  }else
+  {
+   printf("\n Cannot load this......");
+  }
+ }
+}
+
+extern int ITK_user_main (int argc, char ** argv )
+{
+ int org_seq_id_int=0; int status; 
+ int j=0;
+ int i=0; 
+ int n_strings = 1; 
+ int l_strings = 80; // Arbitrary values - Please verify proper lengths for your application! 
+ int tempStrLength = 80; 
+ int index; 
+ logical isCheckOut=false; 
+ FILE* fp=NULL; 
+ char* inputline=NULL; 
+ char* level=NULL; 
+ char* item_id=NULL; 
+ char* item_name=NULL; 
+ char* item_revision_id=NULL; 
+ char* item_sequence_id=NULL; 
+ char* desc=NULL; 
+ char* qty=NULL; 
+ char* dtype=NULL; 
+ char* atype="L"; 
+ char *unit_of_measure="-"; 
+ char* ModDescriptionDupS=NULL; 
+ char* mod_desc=NULL; 
+ char* DrawingNoDupS=NULL; 
+ char* Materialclass=NULL; 
+ char* DrawingIndDupS=NULL; 
+ char* DrawingIndS=NULL; 
+ char* MaterialDupS=NULL; 
+ char* MaterialS=NULL; 
+ char* MaterialInDrwDupS=NULL; 
+ char* MaterialInDrwS=NULL; 
+ char* LeftRhDupS=NULL; 
+ char* LeftRhS=NULL; 
+ char* DeignOwnUnitDupS=NULL; 
+ char* DeignOwnUnitS=NULL; 
+ char* ModelIndDupS=NULL; 
+ char* ModelIndS=NULL; 
+ char* UnitOfMeasureDupS=NULL; 
+ char* UnitOfMeasureS=NULL; 
+ char* ColourIndDupS=NULL; 
+ char* ColourIndS=NULL; 
+ char* WeightDupS=NULL; 
+ char* WeightS=NULL; 
+ char* MaterialThickNessS=NULL; 
+ char* DrawingNoS=NULL; 
+ char* projectcode=NULL; 
+ char* designgroup=NULL; 
+ char * rel_list=NULL; 
+ char * lifecycleS=NULL; 
+ char** stringArray = NULL; 
+ tag_t newItemTag=NULLTAG; 
+ tag_t itemRevCreInTag=NULLTAG; 
+ tag_t itemRevTypeTag=NULLTAG; 
+ tag_t item=NULLTAG; 
+ tag_t rev=NULLTAG; 
+ tag_t *tags_found = NULL; 
+ char *inputfile=NULL; 
+ int n_tags_found= 0; 
+ char **attrs = (char **) MEM_alloc(1 * sizeof(char *)); 
+ char **values = (char **) MEM_alloc(1 * sizeof(char *)); 
+ int stat_count=0; 
+ int stat_count2=0; 
+ tag_t relPropTag=NULLTAG ;
+ tag_t relPropTag2=NULLTAG ;
+ tag_t status2=NULLTAG ;
+ tag_t reln_type=NULLTAG ;
+ tag_t reln_type2=NULLTAG ;
+ tag_t *secondary_objects=NULLTAG ;
+ tag_t *secondary_objects2=NULLTAG ;
+ tag_t *status1=NULL;
+ tag_t  attr_name_id   = NULLTAG;
+ tag_t  primary=NULLTAG,objTypeTag=NULLTAG;
+ tag_t  primary2=NULLTAG,objTypeTag2=NULLTAG;
+ char   *value         = NULL;
+ char   *eff_date         = NULL;
+ tag_t class_id = NULLTAG;
+ char szClassName[100 + 1] = "";
+ logical is_it_empty = FALSE;
+ logical is_it_null  = FALSE;
+ logical is_loaded   = FALSE;
+ char   type_name[100+1];
+ char   type_name2[100+1];
+ int release_status   = 0;
+ FILE* fperror=NULL;
+ char *szbom_revision_status = NULL;
+ tag_t   window, window2, rule, item_tag = null_tag, top_line;
+
+ inputfile = ITK_ask_cli_argument("-i=");     
+ ITK_CALL(ITK_initialize_text_services( ITK_BATCH_TEXT_MODE )); 
+ printf("\n Auto login ");
+ fflush(stdout);
+ ITK_CALL(ITK_auto_login( ));   
+ ITK_CALL(ITK_set_journalling( TRUE ));
+ printf("\n Auto login .......");
+ fflush(stdout); 
+
+ fp=fopen(inputfile,"r");
+ fperror=fopen("error.log","a"); 
+ if(fp!=NULL)
+ {
+
+  inputline=(char *) MEM_alloc(500); 
+  while(fgets(inputline,500,fp)!=NULL) 
+  {  
+                       fputs(inputline,stdout); 
+                       level=strtok(inputline,"^"); 
+                       item_id=strtok(NULL,"^"); 
+                       item_revision_id=strtok(NULL,"^"); 
+                       item_sequence_id=strtok(NULL,"^"); 
+                        desc=strtok(NULL,"^"); 
+   attrs[0] ="item_id";
+   values[0] = (char *)item_id;
+
+   //Querying with item id attribute
+   ITK_CALL(ITEM_find_items_by_key_attributes(1,attrs, values, &n_tags_found, &tags_found));
+   if(n_tags_found==0)
+   { //Keep item id and item name same
+
+    if(strstr(atype,"N")!=NULL)
+    {
+     printf("Creating new Spec\n");
+     //Create object of type WeldSpot in Teamcenter
+     ITK_CALL(ITEM_create_item(item_id,item_id,"WeldSpot",default_empty_to_A(item_revision_id),&item,&rev));        
+    }else if (strstr(atype,"D")!=NULL)
+    {
+     printf("Creating new Dummy Part\n");
+     //Create object of type DummyPart in Teamcenter
+     ITK_CALL(ITEM_create_item(item_id,item_id,"DummyPart",default_empty_to_A(item_revision_id),&item,&rev));      
+     setAttributesOnDesignRev(&rev,projectcode,designgroup,mod_desc,DrawingNoS,DrawingIndS,Materialclass,MaterialInDrwS,MaterialThickNessS,DeignOwnUnitS,ModelIndS,ColourIndS,WeightS);
+     setAttributesOnDesign(&item,UnitOfMeasureS,LeftRhS);
+     setLifeCycle(&rev,lifecycleS);
+     if(strcmp(eff_date,"NONE to NONE")!=0)
+     {
+      setEffectivity(&rev,eff_date);
+     }
+    }else
+    {
+     printf("Creating new Item\n");
+     //Create object of type Design in Teamcenter
+     ITK_CALL(ITEM_create_item(item_id,item_id,"Design",default_empty_to_A(item_revision_id),&item,&rev));    
+     if(strcmp(eff_date,"NONE to NONE")!=0)
+     {
+     ////setEffectivity(&rev,eff_date);
+                                       }
+    }
+    ITK_CALL(AOM_save(item));
+    ITK_CALL(AOM_unlock(item));
+   }else
+   {
+    item = tags_found[0];
+    printf("Item already exists\n");
+    //Find revision object based the item
+    ITK_CALL(ITEM_find_revision(item,item_revision_id,&rev));
+    if(rev != NULLTAG)
+    { 
+      ITK_CALL(AOM_ask_value_int(rev,"sequence_id",&org_seq_id_int));
+      printf("File Sequence    :[%s]\n",item_sequence_id);    
+      printf("Orginal Sequence :[%d]\n",org_seq_id_int); 
+      if(atoi(item_sequence_id)<=(org_seq_id_int))
+      {
+      printf("No need to check-in check out\n");
+      }else
+      {
+       //Check if object is checked out
+       ITK_CALL(RES_is_checked_out(rev,&isCheckOut));
+       if(isCheckOut)
+       {
+         printf("\n This is  check out....");
+         //check in object
+         if(RES_checkin(rev)!=ITK_ok)
+         {
+          fprintf(fperror,"Error with part number:[%s],[%s],[%s]\n",item_id,item_revision_id,item_sequence_id);
+         }
+       }else
+       {
+         printf("\n This is not check out....");
+         if(RES_checkout(rev,"Loader","123","/tmp",RES_EXPORT_FILE)!=ITK_ok)
+         {
+          fprintf(fperror,"Error with part number:[%s],[%s],[%s]\n",item_id,item_revision_id,item_sequence_id);
+         }
+         if(RES_checkin(rev)!=ITK_ok)
+         {
+         fprintf(fperror,"Error with part number:[%s],[%s],[%s]\n",item_id,item_revision_id,item_sequence_id);
+         }
+       }
+
+       printf("Check-in Check out success\n");   
+      }
+    }else
+    {
+       printf("Item Revision not found\n");
+       //Create Item Revision
+       ITK_CALL(ITEM_create_rev(item,default_empty_to_A(item_revision_id),&rev));
+       printf("Item Revision Created\n");
+    }
+   }
+   printf("----------------------------------------------------\n");
+  }
+ }
+ ITK_CALL(POM_logout(false));
+ if(fperror)fclose(fperror);fperror=NULL;
+ return status;
+}
+
+
+Explanation : Important API ITEM_create_item(item_id,item_id,"WeldSpot",default_empty_to_A(item_revision_id),&item,&rev) Deprecated please use TCType_Create_Object RES_is_checked_out(rev,&isCheckOut) 
+RES_checkin(rev) RES_checkout(rev,"Loader","123","/tmp",RES_EXPORT_FILE) PROJ_find(projectcode,&projobj) 
+POM_get_user(&username,&user_tag); PROJ_add_members(projobj,1,&user_tag) 
+PROJ_assign_objects(1 ,&projobj ,1 ,rev ) CR_create_release_status(lcsToset,&status2) EPM_add_release_status(status2,1,itemRev,retain) WSOM_ask_release_status_list(*itemRev,&st_count,&status_list) WSOM_effectivity_create_with_text(status_list[0],NULLTAG,date,&eff_t)
+Posted by Anil Bhendarkar at 19:00 
+Email This
+BlogThis!
+Share to Twitter
+Share to Facebook
+Share to Pinterest
+7 comments:
+
+Giridhar15 February 2017 at 15:43
+I am facing an issue in assigning an object to pro jet. when I rt-click--> project-->assign. I selected the project and apllied the changes. But when I see the properties I still see the projectslist empty. COuld you please help me finding a solution for this
+
+Reply
+
+Anil Bhendarkar15 February 2017 at 20:36
+Can you please verify following things :
+1) User is privileged member of the project.
+2) Login user(Group/Role) is same as the member assigned to project.
+3) Create object manually using login user
+4) Try assigning the project to object
+5) Capture the steps you follow if still the problem and send to anil.bhendarkar05@gmail.com
+
+Reply
+
+Giridhar16 February 2017 at 12:18
+Thanks for the info. The issue is solved by editing the TC_Project_Validate_condition value to 1
+
+Reply
+Replies
+
+Anil Bhendarkar12 May 2017 at 13:36
+Great...
+
+Thanks for providing the information I will make it available in the blog so the other can use it:-)
+
+Reply
+
+kolapalli veera venkata sairam6 December 2017 at 04:19
+release status is not adding to the Item revision.
+
+Reply
+
+MayurVP26 November 2019 at 04:05
+How to change creation_date of item_rev
+
+Reply
+
+Unknown24 January 2020 at 05:22
+How we can delete item by using api.
+? Have u know any api so let me know
+
+Reply
+
+Newer PostOlder PostHome
+Subscribe to: Post Comments (Atom)
+Blog archive
+►  2019 (1)
+►  2017 (14)
+▼  2016 (61)
+▼  December (55)
+Teamcenter : Data Exchange
+PLM XML/TC XML Export Import Administration : Basi...
+Teamcenter ITK : BOM EXPORT WITH PLM XML
+Teamcenter :Manufacturing Process Planner : Create...
+Teamcenter SOA Service : Manufacturing Process Pla...
+Teamcenter ITK : Exapnd BOM with Revision Rule
+Teamcenter ITK API :BOM Creation with variant cond...
+Teamcenter ITK API : Item /Unit of Meanure
+Teamcenter Rich Client Customization : Overview
+Teamcenter Rich Client : Basic Guidelines
+Teamcenter ITAR/IP : Related Issues
+Teamcenter SOA Service Development : BMIDE CODEFUL...
+Teamcenter ITK : Dataset Upload
+Teamcenter ITK : Understanding Folder / GRM Relat...
+Teamcenter ITK : Query APIs
+Teamcenter ITK : Workspace Object Search
+Teamcenter ITK : Register Method on post action of...
+Teamcenter ITK : Create Object / Assign project / ...
+Deploy Customization using TEM
+Manufacturing Planner : Activity Assignment
+Manufacturing Planner : Modular Variant
+Manufacturing Planner : Update Flow using PERT CHART
+SOA Service Client : Update Flow in PERT CHART
+Teamcenter ITK : Action handler and Rule handler
+Teamcenter ITK : Custom Exit : Sample
+WorkFlow Creation :Release Object / Remove Status
+WorkFlow Designer : Create WorkFlow
+Teamcenter Organization : Walk-through
+Object Based Protection
+SOA Service Client API : Get Object Based On Attr...
+SOA Service Client : Object Property Policy
+SOA Service Client : Pack / Unpack BOM
+SOA Service Client : Upload File in Teamcenter
+SOA Service Client : Expand GRM Relation
+SOA Service Client : Get Wherereference
+SOA Service Client : Set Release status
+SOA Service Client : SETPROPERTIES / CHECKOUT / CH...
+SOA Service Client : Get TC Session Information
+SOA Service Client : Set Preference in Teamcenter
+SOA Service Client : Create / Delete Relation In T...
+SOA Service Client : Revise / Delete Item Revision
+SOA Service Client : Global Alternate
+SOA Service Client : Create Relation Between Manuf...
+SOA Serive Client : WorkFlow service in Teamcenter
+SOA Serivce Client : Get Unit Effective revision f...
+SOA Service Client : Download Dataset from Teamcenter
+SOA Service Client : Delete Children from BOM
+SOA Service Client : Get Attributes on Item/Item R...
+SOA Service Client : Creating BOM
+SOA Service Client : Revision Rule and Object Prop...
+SOA Service client: Change Object Ownership
+SOA Serive client: Assign Project to object
+SOA Service client:Get Object by UIDs
+PRECISE VS IMPRECISE
+Manufacturing Process Plan- Understanding Basic st...
+►  November (3)
+►  October (3)
+►  2013 (5)
+About Me
+Anil Bhendarkar
+View my complete profile
+Simple theme. Powered by Blogger.
