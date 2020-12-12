@@ -1,0 +1,55 @@
+# ifndef TI_COST_DATA_IMPORT
+# define TI_COST_DATA_IMPORT
+
+/*************************************************
+* System Header Files
+**************************************************/
+#define _CRT_SECURE_NO_WARNINGS
+#include  <iostream>
+#include  <vector>
+#include  <string>
+#include  <map>
+#include <fstream>
+#include <sstream>
+#include <stdio.h>
+#include <string.h>
+#include <cstring>
+#include <conio.h>
+
+
+/*************************************************
+* Teamcenter Header Files
+**************************************************/
+#include<tc\tc.h>
+#include<tccore\grm.h>
+#include<tc\tc_startup.h>
+#include<tccore\item.h>
+#include<tccore\aom_prop.h>
+#include<tccore\aom.h>
+#include<sa\group.h>
+#include<fclasses\tc_date.h>
+#include<sa\groupmember.h>
+#include<user_exits\epm_toolkit_utils.h>
+#include<lov\lov.h>
+#include<tc\folder.h>
+
+//using namespace std;
+
+
+#endif
+
+#define ERROR_CALL(x) { \
+	int stat; \
+	char *err_string = NULL; \
+	if( (stat = (x)) != ITK_ok) \
+{ \
+	EMH_ask_error_text (stat, &err_string); \
+	if(err_string != NULL) {\
+	printf ("ERROR: %d ERROR MSG: %s \n", stat, err_string); \
+	printf ("Function: %s FILE: %s LINE: %d \n",#x, __FILE__, __LINE__); \
+	TC_write_syslog("TI DataCostImport Error [%d]: %s\n\t(FILE: %s, LINE:%d)\n", stat, err_string, __FILE__, __LINE__);\
+	MEM_free (err_string);\
+	err_string=NULL;\
+	}\
+} \
+}
