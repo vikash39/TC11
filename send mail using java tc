@@ -1,0 +1,82 @@
+//Function to send mail
+	private void sendReminderEmail(String eMailType, String eventName, String userId) throws IOException, InterruptedException
+	{
+		String userMailId = null;
+		
+		//Getting Vendor Contact Mail Id using their User Id
+		if(userContacts != null && userContacts.size() > 0)
+		{
+			userMailId =  userContacts.get(userId);
+		}
+		
+		//Check for View Event mail reminder
+		if(eMailType == "TO_VIEW_EVENT")
+		{
+			//Creating process to send mail
+			Process viewReminderMail = new ProcessBuilder(TC_ROOT+"\\bin\\tc_mail_smtp.exe","-to="+userMailId,"-cc="+sponsorEmail,"-port=25","-user=scf_dev03@asmpt.com","-subject=Reminder: Download of "+eventName,"-body="+reminderMailTemplate,"-server=SMTP-MCH.SIPLACEWORLD.NET").start();
+			
+			//Waiting for process to complete
+			viewReminderMail.waitFor();
+			
+			//Printing process status
+			if(viewReminderMail.exitValue()==0)
+	        {  
+				System.out.println(eventName+" Reminder Mail TO "+userId+" -Success");  
+	        }  
+			else  
+	        {  
+				System.out.println(eventName+" Reminder Mail TO "+userId+" -Failure");
+	        }
+		}
+		
+		//Check for Download Event Attachment mail reminder
+		if(eMailType == "TO_DOWNLOAD_EVENT")
+		{
+			//Creating process to send mail
+			Process downloadAttachmentReminderMail = new ProcessBuilder(TC_ROOT+"\\bin\\tc_mail_smtp.exe","-to="+userMailId,"-cc="+sponsorEmail,"-port=25","-user=scf_dev03@asmpt.com","-subject=Reminder: Download of "+eventName,"-body="+reminderMailTemplate,"-server=SMTP-MCH.SIPLACEWORLD.NET").start();
+			
+			//Waiting for process to complete
+			downloadAttachmentReminderMail.waitFor();
+			
+			//Printing process status
+			if(downloadAttachmentReminderMail.exitValue()==0)
+	        {  
+				System.out.println(eventName+" Reminder Mail TO "+userId+" -Success");  
+	        }  
+			else  
+	        {  
+				System.out.println(eventName+" Reminder Mail TO "+userId+" -Failure");
+	        }
+		}
+		
+		owningUserName = null;
+		sponsorEmail = null;
+		
+	}
+	
+	
+	
+	
+	
+	-----------------------In CPP----------------------------------
+	
+//Method to send Reminder Email
+int tcScfSendReminderMail(const char* user_name, const char* password, const char* user_group)
+{
+	try
+	{
+		//string sCmd("");
+
+		//sCmd.append("tc_mail_smtp -u=").append(user_name).append( " -p=" ).append(password).append( " -g=" ).append(user_group);
+
+		//system(sCmd.c_str());
+	}
+	catch (IFail &ex)
+	{
+		// Getting error code
+		ifail = ex.ifail();
+	}
+
+	// Returning the final status of the code
+	return ifail;
+}
