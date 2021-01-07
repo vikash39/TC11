@@ -1,0 +1,6 @@
+
+https://www.bct-technology.com/en/support/tips-tricks/teamcenter-batch-lov.html
+
+bmide_manage_batch_lovs.bat -u=infodba –p=infodba -g=dba –option=update –file=D:\Vikash\SS\lang\America_customercodemapping_lang.xml
+
+bmide_manage_batch_lovs.bat -u=infodba –p=infodba -g=dba –option=update –file=D:\Vikash\SS\lang\customercode-america_lang.xml
