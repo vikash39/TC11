@@ -1,0 +1,282 @@
+//==================================================
+//
+//  Copyright 2017 Siemens Product Lifecycle Management Software Inc. All Rights Reserved.
+//
+//==================================================
+
+package com.teamcenter.hello;
+
+import com.t8.services.strong.titcerpservice.TITCERPIntegrationService;
+import com.t8.services.strong.titcerpservice._2018_11.TITCERPIntegration.GetStandardCostInput;
+import com.t8.services.strong.titcerpservice._2018_11.TITCERPIntegration.GetStandardCostResponse;
+import com.t8.services.strong.titcerpservice._2018_11.TITCERPIntegration.StandardCostInputData;
+import com.t8.services.strong.titcerpservice._2018_11.TITCERPIntegration.StandardCostRecord;
+import com.teamcenter.clientx.AppXSession;
+
+
+
+
+/**
+ * This sample client application demonstrates some of the basic features of the
+ * Teamcenter Services framework and a few of the services.
+ *
+ * An instance of the Connection object is created with implementations of the
+ * ExceptionHandler, PartialErrorListener, ChangeListener, and DeleteListeners
+ * intefaces. This client application performs the following functions:
+ * 1. Establishes a session with the Teamcenter server
+ * 2. Display the contents of the Home Folder
+ * 3. Performs a simple query of the database
+ * 4. Create, revise, and delete an Item
+ *
+ */
+public class Hello
+{
+
+    /**
+     * @param args   -help or -h will print out a Usage statement
+     */
+    public static void main(String[] args)
+    {
+        if (args.length > 0)
+        {
+            if (args[0].equals("-help") || args[0].equals("-h"))
+            {
+                System.out.println("usage: java [-Dhost=http://server:port/tc] com.teamcenter.hello.Hello");
+                System.exit(0);
+            }
+        }
+
+        // Get optional host information
+        String serverHost = "http://INCHN0079DC:8080/tc";
+        String host = "http://INCHN0079DC:8080/tc";
+        //String serverHost = "http://10.193.17.32:8086//tc"; //http://10.193.17.43:8086//tc
+        //String host = "http://10.193.17.32:8086//tc";
+       
+        if (host != null && host.length() > 0)
+        {
+            serverHost = host;
+        }
+
+        
+
+        AppXSession   session = new AppXSession(serverHost);
+      //  session.login();
+
+      // TITCERPExtensionService erpService = TITCERPExtensionService.getService(session.getConnection());
+    /*
+        TITCERPIntegrationService erpService = TITCERPIntegrationService.getService(session.getConnection());
+	       StandardCostRecord[] recordArr = new StandardCostRecord[8];
+	       StandardCostRecord[] recordArr2 = new StandardCostRecord[2];
+	       StandardCostInputData[] stdcstinpArr = new StandardCostInputData[2];
+	      
+	       stdcstinpArr[0] = new StandardCostInputData();
+	       stdcstinpArr[0].bpcsItemID="123";
+	       stdcstinpArr[0].itemID="000100550";     // tested id:- 000100550/AA //100100062/AA   //local itme id: 000039/AA
+	       stdcstinpArr[0].itemRevID="AA";
+	       stdcstinpArr[0].costID="11223366";
+	       stdcstinpArr[0].itemDesc="Test Item";
+	       stdcstinpArr[0].extraDesc="local test item";
+	       stdcstinpArr[0].standardCostRecords = recordArr;
+	      
+	       stdcstinpArr[1] = new StandardCostInputData();
+	       stdcstinpArr[1].bpcsItemID="500";
+	       stdcstinpArr[1].itemID="000100551";  //tested id :- 000100551/AA//100100063/AA   //local itme id: 000035/AC
+	       stdcstinpArr[1].itemRevID="AA";
+	       stdcstinpArr[1].costID="11223366";
+	       stdcstinpArr[1].itemDesc="Test Item2";
+	       stdcstinpArr[1].extraDesc="local test item";
+	       stdcstinpArr[1].standardCostRecords = recordArr2;
+	      
+	    
+	       recordArr[0] = new StandardCostRecord();
+	       recordArr[0].costBucket ="000";
+	       recordArr[0].facility ="42";
+	       recordArr[0].currentCost ="500.500";
+	       recordArr[0].currency ="US Dollar (USD)";
+	       recordArr[0].recordID ="CF";
+	       recordArr[0].quantity ="1.000";
+	       recordArr[0].costSet ="02";
+	       recordArr[0].stockingUOM = "EA";
+	     
+	      recordArr[1] = new StandardCostRecord();
+	       recordArr[1].costBucket ="001";
+	       recordArr[1].facility ="42";
+	       recordArr[1].currentCost ="900.45";
+	       recordArr[1].currency ="US Dollar (USD)";
+	       recordArr[1].recordID ="CF";
+	       recordArr[1].quantity ="1.000";
+	       recordArr[1].costSet ="02";
+	       recordArr[1].stockingUOM ="EA";
+	      
+	       recordArr[2] = new StandardCostRecord();
+	       recordArr[2].costBucket ="002";
+	       recordArr[2].facility ="42";
+	       recordArr[2].currentCost ="480.568";
+	       recordArr[2].currency ="US Dollar (USD)";
+	       recordArr[2].recordID ="CF";
+	       recordArr[2].quantity ="1.000";
+	       recordArr[2].costSet ="02";
+	       recordArr[2].stockingUOM ="EA";
+	      
+	       recordArr[3] = new StandardCostRecord();
+	       recordArr[3].costBucket ="003";
+	       recordArr[3].facility ="42";
+	       recordArr[3].currentCost ="86.340";
+	       recordArr[3].currency ="US Dollar (USD)";
+	       recordArr[3].recordID ="CF";
+	       recordArr[3].quantity ="1.000";
+	       recordArr[3].costSet ="02";
+	       recordArr[3].stockingUOM ="EA";
+	      
+	       recordArr[4] = new StandardCostRecord();
+	       recordArr[4].costBucket ="004";
+	       recordArr[4].facility ="42";
+	       recordArr[4].currentCost ="8943.90";
+	       recordArr[4].currency ="US Dollar (USD)";
+	       recordArr[4].recordID ="CF";
+	       recordArr[4].quantity ="1.000";
+	       recordArr[4].costSet ="02";
+	       recordArr[4].stockingUOM ="EA";
+	      
+	       recordArr[5] = new StandardCostRecord();
+	       recordArr[5].costBucket ="005";
+	       recordArr[5].facility ="42";
+	       recordArr[5].currentCost ="10.20";
+	       recordArr[5].currency ="US Dollar (USD)";
+	       recordArr[5].recordID ="CF";
+	       recordArr[5].quantity ="1.000";
+	       recordArr[5].costSet ="02";
+	       recordArr[5].stockingUOM ="EA";
+	      
+	       recordArr[6] = new StandardCostRecord();
+	       recordArr[6].costBucket ="007";
+	       recordArr[6].facility ="42";
+	       recordArr[6].currentCost ="860.90";
+	       recordArr[6].currency ="US Dollar (USD)";
+	       recordArr[6].recordID ="CF";
+	       recordArr[6].quantity ="1.000";
+	       recordArr[6].costSet = "02";
+	       recordArr[6].stockingUOM ="EA";
+	      
+	       recordArr[7] = new StandardCostRecord();
+	       recordArr[7].costBucket ="008";
+	       recordArr[7].facility ="42";
+	       recordArr[7].currentCost ="645.890";
+	       recordArr[7].currency ="US Dollar (USD)";
+	       recordArr[7].recordID ="CF";
+	       recordArr[7].quantity ="1.000";
+	       recordArr[7].costSet ="02";
+	       recordArr[7].stockingUOM ="EA"; 
+	      
+	       recordArr2[0] = new StandardCostRecord();
+	       recordArr2[0].costBucket ="001";
+	       recordArr2[0].facility ="47";
+	       recordArr2[0].currentCost ="600.80";
+	       recordArr2[0].currency ="Indian Rupee (INR)";
+	       recordArr2[0].recordID ="CF";
+	       recordArr2[0].quantity ="1.000";
+	       recordArr2[0].costSet ="0266";
+	       recordArr2[0].stockingUOM ="EA";
+	       
+	       recordArr2[1] = new StandardCostRecord();
+	       recordArr2[1].costBucket ="003";
+	       recordArr2[1].facility ="47";
+	       recordArr2[1].currentCost ="562.90";
+	       recordArr2[1].currency ="Indian Rupee (INR)";
+	       recordArr2[1].recordID ="CF";
+	       recordArr2[1].quantity ="1.000";
+	       recordArr2[1].costSet ="02";
+	       recordArr2[1].stockingUOM ="EA"; */
+	       
+	    /*  recordArr2[2] = new StandardCostRecord();
+	       recordArr2[2].costBucket ="004";
+	       recordArr2[2].facility ="47";
+	       recordArr2[2].currentCost ="44.45";
+	       recordArr2[2].currency ="Indian Rupee (INR)";
+	       recordArr2[2].recordID ="CF";
+	       recordArr2[2].quantity ="1.000";
+	       recordArr2[2].costSet ="02";
+	       recordArr2[2].stockingUOM ="EA";
+	       
+	       recordArr2[3] = new StandardCostRecord();
+	       recordArr2[3].costBucket ="005";
+	       recordArr2[3].facility ="47";
+	       recordArr2[3].currentCost ="652.34";
+	       recordArr2[3].currency ="Indian Rupee (INR)";
+	       recordArr2[3].recordID ="CF";
+	       recordArr2[3].quantity ="1.000";
+	       recordArr2[3].costSet ="02";
+	       recordArr2[3].stockingUOM ="EA";
+	       
+	       recordArr2[4] = new StandardCostRecord();
+	       recordArr2[4].costBucket ="007";
+	       recordArr2[4].facility ="47";
+	       recordArr2[4].currentCost ="908.44";
+	       recordArr2[4].currency ="Indian Rupee (INR)";
+	       recordArr2[4].recordID ="CF";
+	       recordArr2[4].quantity ="1.000";
+	       recordArr2[4].costSet ="02";
+	       recordArr2[4].stockingUOM ="EA";
+	       
+	       recordArr2[5] = new StandardCostRecord();
+	       recordArr2[5].costBucket ="008";
+	       recordArr2[5].facility ="47";
+	       recordArr2[5].currentCost ="506.900";
+	       recordArr2[5].currency ="Indian Rupee (INR)";
+	       recordArr2[5].recordID ="CF";
+	       recordArr2[5].quantity ="1.000";
+	       recordArr2[5].costSet ="02";
+	       recordArr2[5].stockingUOM ="EA";
+	       
+	       recordArr2[6] = new StandardCostRecord();
+	       recordArr2[6].costBucket ="000";
+	       recordArr2[6].facility ="47";
+	       recordArr2[6].currentCost ="400000.68";
+	       recordArr2[6].currency ="Indian Rupee (INR)";
+	       recordArr2[6].recordID ="CF";
+	       recordArr2[6].quantity ="1.000";
+	       recordArr2[6].costSet ="02";
+	       recordArr2[6].stockingUOM ="EA";
+	       
+	       recordArr2[7] = new StandardCostRecord();
+	       recordArr2[7].costBucket ="002";
+	       recordArr2[7].facility ="47";
+	       recordArr2[7].currentCost ="200.6";
+	       recordArr2[7].currency ="Indian Rupee (INR)";
+	       recordArr2[7].recordID ="CF";
+	       recordArr2[7].quantity ="1.000";
+	       recordArr2[7].costSet ="02";
+	       recordArr2[7].stockingUOM ="EA";*/
+
+
+	     
+	      
+	   /*   
+	       GetStandardCostInput standardcostInputs = new GetStandardCostInput();
+	       standardcostInputs.standardCostInputData = stdcstinpArr;
+	       GetStandardCostResponse response = erpService.importStandardCostInfo(standardcostInputs);
+		
+		
+		System.out.println("outputResponse:"+response);*/
+       
+      // GetStandardCostInput arg0 = new GetStandardCostInput();
+      //GetStandardCostResponse response = erpService.importStandardCostInfo(arg0 );
+      
+     TITCERPIntegrationService erpService = TITCERPIntegrationService.getService(session.getConnection());
+      GetStandardCostInput arg0 = new GetStandardCostInput();
+      GetStandardCostResponse response = erpService.importStandardCostInfo(arg0);
+      System.out.println(response);
+
+	
+        // Terminate the session with the Teamcenter server
+        session.logout();
+
+    }
+
+
+
+
+
+
+
+}
