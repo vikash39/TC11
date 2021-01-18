@@ -1,0 +1,12 @@
+#define ERROR_CALL_RETURN(x) {  \
+  int stat;                     \
+  char *err_string;             \
+  if( (stat = (x)) != ITK_ok)   \
+  {                             \
+    EMH_ask_error_text (stat, &err_string); \
+    TC_write_syslog ("ERROR: %d ERROR MSG: %s \n", stat, err_string); \
+    TC_write_syslog ("Function: %s FILE: %s LINE: %d \n",#x, __FILE__, __LINE__); \
+    MEM_free (err_string); \
+    return (stat); \
+  } \
+ }
