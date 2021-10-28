@@ -1,0 +1,8 @@
+Copy & past in file & save it with .bat file.
+
+set TC_ROOT=D:\Apps\siemenns\TC12.3\IZTC2951\TC_ROOT
+set FMS_HOME=%TC_ROOT%\tccs
+set JAVA_HOME=D:\Apps\java\jdk1.8.0_121
+set JRE_HOME=D:\Apps\java\jre1.8.0_121
+set PATH=%FMS_HOME%\bin;%FMS_HOME%\lib;%TC_ROOT%\portal;%PATH%
+D:\Apps\Eclipse\eclipse.exe "%JAVA_HOME%\bin\javaw.exe"
