@@ -1,0 +1,26 @@
+We would like to fetch the information of MFGPart from production. Please run the following query and share the result.
+
+ 
+
+Select l.puid as UID, pitem_id as itemid, pobject_type as Objecttype FROM PITEM l -- ITEM ID
+JOIN PTD4MFGPart mfg ON mfg.puid = l.puid;
+
+
+Please see attached file for the results of the query:
+
+ 
+
+Select l.puid as UID, pitem_id as itemid, g.pobject_type as Objecttype FROM PITEM l -- ITEM ID
+
+JOIN PWORKSPACEOBJECT g ON g.puid = l.puid
+
+JOIN PTD4MFGPART mfg ON mfg.puid = l.puid;
+
+
+Sending sql results from this query:
+
+Select l.puid as UID, pitem_id as itemid, g.pobject_type as Objecttype FROM PITEM l -- ITEM ID
+
+JOIN PWORKSPACEOBJECT g ON g.puid = l.puid and g.pactive_seq <> '0'
+
+JOIN PTD4MFGPART mfg ON mfg.puid = l.puid;
