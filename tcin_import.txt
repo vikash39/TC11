@@ -1,0 +1,13 @@
+@echo off
+SET TC_ROOT=E:\PLM\Tc11.5
+SET TC_DATA=Z:\PLM\tcdata115
+SET FMS_HOME=C:\PLM\GLBL\Tc11.5\tccs
+call %TC_DATA%\tc_profilevars.bat
+set UGII_BASE_DIR=C:\CAD\NX\110
+set UGII_ROOT_DIR=C:\CAD\NX\110\UGII
+set PATH=%UGII_BASE_DIR%\ugii;%PATH%;
+if exist %UGII_ROOT_DIR% cd /d %UGII_ROOT_DIR%
+set UGII_UGMGR_COMMUNICATION=HTTP
+set UGII_UGMGR_HTTP_URL=http://xxxxxx.resource.Siemens.com:8086/tc
+Rem call "C:\CAD\NX\110\UGII\ug_clone.exe" -pim=yes -http_url=http://xxxxxx.resource.Siemens.com:8086/tc -u=XXXXXXXX -p=YYYYYYY -g=dba -o=import -l="C:\Users\ksyedabdul\Desktop\NX_DryRun\NXAssemblies.clone" -s="C:\Users\ksyedabdul\Desktop\NX_DryRun\NXAssemblies_log.clone"
+Rem call "C:\Program_Files\Siemens\NX1980\UGMANAGER\tcin_import.exe" -pim=yes -http_url=http://xxxxxx.resource.Siemens.com:8086/tc -u=XXXXXXXX -p=YYYYYYY -g=dba -o=import -l="C:\Users\ksyedabdul\Desktop\NX_DryRun\NXAssemblies.clone" -s="C:\Users\ksyedabdul\Desktop\NX_DryRun\NXAssemblies_log.clone"

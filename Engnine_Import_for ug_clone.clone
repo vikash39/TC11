@@ -1,0 +1,109 @@
+﻿Assembly Cloning Log File
+&LOG Operation_Type: IMPORT_OPERATION
+&LOG Default_Cloning_Action: OVERWRITE
+&LOG Default_Naming_Technique: USER_NAME
+&LOG Default_Container: "infodba:Engine_folder"
+&LOG Default_Directory: ""
+&LOG Default_Part_Type: Item
+&LOG Default_Part_Name: ""
+&LOG Default_Part_Description: ""
+&LOG Default_Copy_Associated_Files: Yes
+&LOG Default_Non_Master_Copy: specification Yes
+&LOG Default_Non_Master_Copy: manifestation Yes
+&LOG Default_Non_Master_Copy: altrep Yes
+&LOG Default_Non_Master_Copy: cae_motion Yes
+&LOG Default_Associated_Files_Directory: ""
+&LOG Default_Validation_Mode: OFF
+&LOG 
+&LOG Part: "D:\NX_files\Bearing.prt"
+&LOG Cloning_Action: DEFAULT_DISP Naming_Technique: DEFAULT_NAMING Clone_Name: @DB/IZ00210/A
+&LOG Container: "infodba:Engine_folder"
+&LOG Part_Type: Item
+&LOG Part_Name: IZ00210
+&LOG Part_Description:IZ00210
+&LOG Associated_Files_Directory: ""
+&LOG 
+&LOG Part: "D:\NX_files\Connecting_Rod.prt"
+&LOG Cloning_Action: DEFAULT_DISP Naming_Technique: DEFAULT_NAMING Clone_Name: @DB/IZ00211/A
+&LOG Container: "infodba:Engine_folder"
+&LOG Part_Type: Item
+&LOG Part_Name: IZ00211
+&LOG Part_Description: IZ00211
+&LOG Associated_Files_Directory: ""
+&LOG 
+&LOG Part: "D:\NX_files\Connecting_Rod_dwg1.prt"
+&LOG Cloning_Action: DEFAULT_DISP 
+&LOG Naming_Technique: DEFAULT_NAMING Clone_Name: "@DB/IZ00211/A/specification/IZ00211-A-dwg1"
+&LOG Container: "infodba:infodba:Engine_folder"
+&LOG Part_Type: Item
+&LOG Part_Name: IZ00211
+&LOG Part_Description: IZ00211
+&LOG Associated_Files_Directory: ""
+&LOG
+&LOG Part: "D:\NX_files\Crank_shaft.prt"
+&LOG Cloning_Action: DEFAULT_DISP Naming_Technique: DEFAULT_NAMING Clone_Name: @DB/IZ00212/A
+&LOG Container: "infodba:Engine_folder"
+&LOG Part_Type: Item
+&LOG Part_Name: IZ00212
+&LOG Part_Description: IZ00212
+&LOG Associated_Files_Directory: ""
+&LOG 
+&LOG Part: "D:\NX_files\Crank_shaft_dwg1.prt"
+&LOG Cloning_Action: DEFAULT_DISP 
+&LOG Naming_Technique: DEFAULT_NAMING Clone_Name: "@DB/IZ00212/A/specification/IZ00212-A-dwg1"
+&LOG Container: "infodba:infodba:Engine_folder"
+&LOG Part_Type: Item
+&LOG Part_Name: IZ00212
+&LOG Part_Description: IZ00212
+&LOG Associated_Files_Directory: ""
+&LOG
+&LOG Part: "D:\NX_files\Engine_Block.prt"
+&LOG Cloning_Action: DEFAULT_DISP Naming_Technique: DEFAULT_NAMING Clone_Name: @DB/IZ00213/A
+&LOG Container: "infodba:Engine_folder"
+&LOG Part_Type: Item
+&LOG Part_Name: IZ00213
+&LOG Part_Description: IZ00213
+&LOG Associated_Files_Directory: ""
+&LOG
+&LOG Part: "D:\NX_files\Engine_Block_dwg1.prt"
+&LOG Cloning_Action: DEFAULT_DISP 
+&LOG Naming_Technique: DEFAULT_NAMING Clone_Name: "@DB/IZ00213/A/specification/IZ00213-A-dwg1"
+&LOG Container: "infodba:infodba:Engine_folder"
+&LOG Part_Type: Item
+&LOG Part_Name: IZ00213
+&LOG Part_Description: IZ00213
+&LOG Associated_Files_Directory: ""
+&LOG 
+&LOG Part: "D:\NX_files\Pin.prt"
+&LOG Cloning_Action: DEFAULT_DISP Naming_Technique: DEFAULT_NAMING Clone_Name: @DB/IZ00214/A
+&LOG Container: "infodba:Engine_folder"
+&LOG Part_Type: Item
+&LOG Part_Name: IZ00214
+&LOG Part_Description: IZ00214
+&LOG Associated_Files_Directory: ""
+&LOG 
+&LOG Part: "D:\NX_files\Piston.prt"
+&LOG Cloning_Action: DEFAULT_DISP Naming_Technique: DEFAULT_NAMING Clone_Name: @DB/IZ00215/A
+&LOG Container: "infodba:Engine_folder"
+&LOG Part_Type: Item
+&LOG Part_Name: IZ00215
+&LOG Part_Description: IZ00215
+&LOG Associated_Files_Directory: ""
+&LOG 
+&LOG Part: "D:\NX_files\Piston_dwg1.prt"
+&LOG Cloning_Action: DEFAULT_DISP 
+&LOG Naming_Technique: DEFAULT_NAMING Clone_Name: "@DB/IZ00215/A/specification/IZ00215-A-dwg1"
+&LOG Container: "infodba:infodba:Engine_folder"
+&LOG Part_Type: Item
+&LOG Part_Name: IZ00215
+&LOG Part_Description: IZ00215
+&LOG Associated_Files_Directory: ""
+&LOG 
+&LOG Part: "D:\NX_files\Engine_Assembly.prt"
+&LOG Cloning_Action: DEFAULT_DISP Naming_Technique: DEFAULT_NAMING Clone_Name: @DB/IZ00216/A
+&LOG Container: "infodba:Engine_folder"
+&LOG Part_Type: Item
+&LOG Part_Name: IZ00216
+&LOG Part_Description: IZ00216
+&LOG Associated_Files_Directory: ""
+&LOG
